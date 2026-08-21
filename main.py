@@ -1,4 +1,9 @@
-"""Run and display all five YZ50 neural-network exercises."""
+"""YZ50 birinci hafta görevlerini sırayla çalıştıran deney defteri.
+
+Bu dosya sonuçları yalnızca üretmez; her bölüm aynı zamanda temel bir neural
+network kavramını gözle görünür hale getirir. Matematiksel fonksiyonların yalın
+halleri ``neural_network.py`` dosyasındadır.
+"""
 
 import csv
 from pathlib import Path
@@ -16,6 +21,7 @@ OUTPUT_DIR = Path(__file__).parent / "outputs"
 
 
 def write_history_csv(history, path):
+    """Gradient descent adımlarını sonradan incelemek için CSV olarak kaydet."""
     with path.open("w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
         writer.writerow(["step", "weight", "loss"])
@@ -23,6 +29,9 @@ def write_history_csv(history, path):
 
 
 def write_loss_svg(points, path):
+    """Üçüncü taraf çizim kütüphanesi olmadan basit bir loss grafiği üret."""
+    # SVG metin tabanlı bir resim formatıdır. Aşağıdaki kod matematiğin parçası
+    # değil; hesapladığımız (weight, loss) noktalarını görünür kılmak içindir.
     width, height, margin = 800, 450, 55
     x_values = [point[0] for point in points]
     y_values = [point[1] for point in points]
@@ -57,10 +66,20 @@ def write_loss_svg(points, path):
 def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
 
+    # ---------------------------------------------------------------------
+    # GÖREV 1 — TEK NÖRON FORWARD PASS
+    # ---------------------------------------------------------------------
+    # Hesap: 1*0.2 + 2*0.8 + 3*(-0.5) + 2 = 2.3
+    # inputs veridir; weights ve bias modelin parametreleridir.
     print("1) Tek noron forward pass")
     output = neuron_forward([1.0, 2.0, 3.0], [0.2, 0.8, -0.5], 2.0)
     print(f"   output = {output:.4f}")
 
+    # ---------------------------------------------------------------------
+    # GÖREV 2 — BİR KATMANIN FORWARD PASS'İ
+    # ---------------------------------------------------------------------
+    # Üç nöron aynı girdileri alıyor. Her satır farklı bir nöronun weight
+    # listesidir ve her nöronun kendine ait bias değeri vardır.
     print("\n2) Uc noronlu katman forward pass")
     outputs = layer_forward(
         [1.0, 2.0, 3.0],
@@ -69,29 +88,52 @@ def main():
     )
     print(f"   outputs = {[round(value, 4) for value in outputs]}")
 
+    # ---------------------------------------------------------------------
+    # GÖREV 3 — LOSS FONKSİYONU
+    # ---------------------------------------------------------------------
+    # Loss tahminin ne kadar kötü olduğunu tek sayıya indirger. Buradaki MSE:
+    # [(2.5-3)^2 + (0-(-0.5))^2 + (2.1-2)^2] / 3 = 0.17
     print("\n3) Mean squared error")
     loss = mean_squared_error([2.5, 0.0, 2.1], [3.0, -0.5, 2.0])
     print(f"   loss = {loss:.4f}")
 
+    # Son iki görev için küçük ve ilişkisi bilinen bir veri kümesi kullanılır.
+    # Gerçek kural y=2x'tir. Model bu kuralı önceden bilmiyor; doğru weight'i
+    # loss'a bakarak bulmasını istiyoruz.
     xs = [-2.0, -1.0, 0.0, 1.0, 2.0]
-    targets = [-4.0, -2.0, 0.0, 2.0, 4.0]  # y = 2x
+    targets = [-4.0, -2.0, 0.0, 2.0, 4.0]  # Gerçek ilişki: y = 2x
     bias = 0.0
 
+    # ---------------------------------------------------------------------
+    # GÖREV 4 — PARAMETREYİ ELLE DEĞİŞTİRMEK
+    # ---------------------------------------------------------------------
+    # Weight'i -1 ile 3 arasında tarıyoruz. Bu bir eğitim algoritması değil;
+    # parametre-loss ilişkisini gözlemlemek için kontrollü bir deneydir.
+    # Weight 2 olduğunda model y=2x kuralıyla aynı olur ve loss sıfıra iner.
     print("\n4) Parametreyi manuel degistirme")
     curve = []
     for index in range(21):
-        weight = -1.0 + index * 0.2
+        weight = -1.0 + index * 0.2  # Her denemede weight'i 0.2 artır.
         current_loss = dataset_loss(xs, targets, weight, bias)
         curve.append((weight, current_loss))
         print(f"   weight={weight:5.2f} -> loss={current_loss:7.4f}")
+    # Hesaplanan noktaları outputs/loss_curve.svg içinde görselleştir.
     write_loss_svg(curve, OUTPUT_DIR / "loss_curve.svg")
 
+    # ---------------------------------------------------------------------
+    # GÖREV 5 — SAYISAL TÜREVLE GRADIENT DESCENT
+    # ---------------------------------------------------------------------
+    # Bu kez doğru weight'i elle seçmiyoruz. Başlangıçta -1 olan weight,
+    # sayısal türevin gösterdiği azalış yönünde 20 kez güncelleniyor.
+    # Beklenti: weight 2'ye yaklaşırken loss'un sıfıra yaklaşmasıdır.
     print("\n5) Sayisal turev ile gradient descent")
     final_weight, history = gradient_descent(
         xs, targets, initial_weight=-1.0, bias=bias, learning_rate=0.1, steps=20
     )
     for step, weight, current_loss in history:
         print(f"   step={step:2d}, weight={weight:9.6f}, loss={current_loss:.8f}")
+
+    # CSV dosyası, öğrenme sürecindeki her adımı tablo olarak saklar.
     write_history_csv(history, OUTPUT_DIR / "gradient_descent.csv")
     print(f"\nFinal weight: {final_weight:.6f}")
     print(f"Ciktilar: {OUTPUT_DIR}")

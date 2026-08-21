@@ -181,6 +181,33 @@ olsa da temel eğitim döngüsü benzerdir:
 Gerçek sinir ağlarında gradient'ler sayısal türev yerine çok daha verimli olan
 backpropagation ve otomatik türev araçlarıyla hesaplanır.
 
+## Kodu bir ders notu olarak okuma sırası
+
+Bu repo yalnızca çalıştırılacak bir program değil, kod üzerinden takip
+edilebilecek bir çalışma defteri olarak düzenlendi. Konuları şu sırayla okumak
+bağlantıları kurmayı kolaylaştırır:
+
+1. `neural_network.py` içindeki `neuron_forward()` ile tek nöronun
+   `x*w + bias` hesabını incele.
+2. `layer_forward()` içinde aynı girdilerin farklı parametrelere sahip
+   nöronlara nasıl dağıtıldığını gör.
+3. `mean_squared_error()` ile tahmin kalitesinin nasıl tek bir loss sayısına
+   dönüştürüldüğünü takip et.
+4. `main.py` içindeki Görev 4 döngüsünde weight değişirken loss'un neden önce
+   azalıp `weight=2` sonrasında yeniden arttığını gözlemle.
+5. `numerical_derivative()` içindeki sağ ve sol loss ölçümlerini karşılaştır.
+6. `gradient_descent()` içindeki `weight = weight - learning_rate * gradient`
+   satırını incele. Bu örnekte modelin öğrenmesini gerçekleştiren satır budur.
+7. `outputs/gradient_descent.csv` dosyasını açarak her adımda weight'in 2'ye,
+   loss'un sıfıra nasıl yaklaştığını tablo üzerinden doğrula.
+
+Kod içindeki Türkçe yorumlar yalnızca “ne yapıldığını” değil, ilgili satırın
+hangi neural-network kavramına karşılık geldiğini de açıklar.
+
+## Deney çıktısı: loss eğrisi
+
+![Weight değişimine göre loss eğrisi](outputs/loss_curve.svg)
+
 ## Projeyi çalıştırma
 
 Python 3 yeterlidir; ek paket kurulumu gerekmez:
