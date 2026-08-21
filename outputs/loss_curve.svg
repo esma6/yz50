@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <rect width="100%" height="100%" fill="white"/>
+  <line x1="55" y1="395" x2="745" y2="395" stroke="#222"/>
+  <line x1="55" y1="55" x2="55" y2="395" stroke="#222"/>
+  <polyline points="55.00,55.00 89.50,98.82 124.00,139.62 158.50,177.40 193.00,212.16 227.50,243.89 262.00,272.60 296.50,298.29 331.00,320.96 365.50,340.60 400.00,357.22 434.50,370.82 469.00,381.40 503.50,388.96 538.00,393.49 572.50,395.00 607.00,393.49 641.50,388.96 676.00,381.40 710.50,370.82 745.00,357.22" fill="none" stroke="#2563eb" stroke-width="3"/>
+  <text x="400.0" y="28" text-anchor="middle" font-family="sans-serif" font-size="20">Weight'e gore loss</text>
+  <text x="400.0" y="438" text-anchor="middle" font-family="sans-serif">weight</text>
+  <text x="16" y="225.0" text-anchor="middle" font-family="sans-serif" transform="rotate(-90 16 225.0)">loss</text>
+  <text x="55" y="417" font-family="sans-serif" font-size="12">-1.0</text>
+  <text x="745" y="417" text-anchor="end" font-family="sans-serif" font-size="12">3.0</text>
+  <text x="47" y="59" text-anchor="end" font-family="sans-serif" font-size="12">18.00</text>
+  <text x="47" y="395" text-anchor="end" font-family="sans-serif" font-size="12">0.00</text>
+</svg>
