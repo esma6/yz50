@@ -13,4 +13,19 @@ Bir sonuç değerinden geriye doğru gidebilmek için forward pass sırasında h
 bilgileri kaybetmemeliyim?
 """
 
-# Görev 1'e başladığımızda ilk kod buraya yazılacak.
+class Value:
+    def __init__(self, data, _children=(), _op=""):
+        self.data = data
+        self._prev = set(_children)
+        self._op = _op
+
+    def __add__(self, other):
+        out = Value(
+            self.data + other.data,
+            (self, other),
+            "+",
+        )
+        return out
+
+    def __repr__(self):
+        return f"Value(data={self.data})"

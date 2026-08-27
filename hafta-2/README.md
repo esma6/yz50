@@ -3,8 +3,10 @@
 [← Ana sayfaya dön](../README.md)
 
 Bu klasör, Karpathy'nin micrograd yaklaşımını izleyerek backpropagation
-mekanizmasını sıfırdan anlamak için hazırlandı. Dosyalarda çözüm kodu bulunmuyor;
-her görev, kavram öğrenildikten sonra tarafımdan adım adım doldurulacak.
+mekanizmasını sıfırdan anlamak için hazırlandı. Ana çalışma alanı
+`backpropagation_calismasi.ipynb` notebook'udur. Açıklamalar, elle hesaplar,
+deneyler ve çalıştırılmış çıktılar burada yan yana tutulur. Tamamlanan ve tekrar
+kullanılacak sınıflar daha sonra temiz Python dosyalarına aktarılır.
 
 ## Bu haftanın ana fikri
 
@@ -28,12 +30,15 @@ Bütün parametrelerin gradient'leri
 
 | Dosya | Ne zaman doldurulacak? | Görevi |
 |---|---|---|
+| `backpropagation_calismasi.ipynb` | Bütün görevler | Ana çalışma defteri, deneyler ve görünür çıktılar |
 | `value.py` | Görev 1–4 | `Value`, matematiksel operasyonlar ve `backward()` |
 | `nn.py` | Görev 5 | `Neuron`, `Layer` ve `MLP` sınıfları |
 | `train.py` | Görev 5 | Veri kümesi, loss ve eğitim döngüsü |
 | `test_week2.py` | Her görevden sonra | Analitik, sayısal ve davranışsal doğrulamalar |
 
-Kodları bu sırayla yazacağım. Henüz ihtiyaç duyulmayan bir dosyaya geçmeyeceğim.
+Notebook içinde bir kavramı deneyip doğruladıktan sonra kalıcı uygulamasını
+ilgili `.py` dosyasına aktaracağım. Böylece notebook öğrenme sürecini, Python
+dosyaları ise ortaya çıkan temiz uygulamayı gösterecek.
 
 ## Görev sırası ve bitirme ölçütleri
 
@@ -142,12 +147,28 @@ Her kod parçasında şu sırayı uygulayacağım:
 5. Test veya numerical derivative ile doğrulayacağım.
 6. Ne öğrendiğimi ve nerede zorlandığımı bu README'ye ekleyeceğim.
 
+## Notebook çalışma düzeni
+
+Her görev notebook içinde aynı dört hücre türüyle ilerler:
+
+```text
+Kavram — Kendi cümlelerimle açıklama
+→ Elle hesap — Beklediğim sonuç
+→ Kod deneyi — Yazdığım kodu çalıştırma
+→ Sonuç — Çıktıyı yorumlama ve doğrulama
+```
+
+Notebook kaydedildiğinde hücre çıktıları dosyanın içinde kalır. GitHub bu
+çıktıları doğrudan render ettiği için repoyu açan biri deneylerin sonuçlarını
+kod çalıştırmadan görebilir.
+
 ## Çalıştırma
 
 Dosyalar tamamlandıkça bu klasör içinde çalıştırılacak:
 
 ```bash
 cd hafta-2
+python -m notebook backpropagation_calismasi.ipynb
 python -m unittest -v
 python train.py
 ```
@@ -158,7 +179,7 @@ Görevler ilerledikçe aşağıdaki tablo güncellenecek:
 
 | Görev | Durum | Doğrulama | Not |
 |---|---|---|---|
-| 1. Value ve graph | Başlanmadı | — | — |
+| 1. Value ve graph | Devam ediyor | `Value.data` ve toplama elle kontrol edildi | İlk graph bağlantısı kuruldu |
 | 2. Elle backpropagation | Başlanmadı | — | — |
 | 3. Otomatik backward | Başlanmadı | — | — |
 | 4. Üçlü gradient kontrolü | Başlanmadı | — | — |
