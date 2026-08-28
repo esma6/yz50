@@ -31,11 +31,13 @@ Bütün parametrelerin gradient'leri
 | Dosya | Ne zaman doldurulacak? | Görevi |
 |---|---|---|
 | `backpropagation_calismasi.ipynb` | Bütün görevler | Ana çalışma defteri, deneyler ve görünür çıktılar |
+| `video_anlatimi.ipynb` | Video teslimi | Sade, konuşma dilinde kayıt akışı ve temel çıktılar |
 | `value.py` | Görev 1–4 | `Value`, matematiksel operasyonlar ve `backward()` |
 | `nn.py` | Görev 5 | `Neuron`, `Layer` ve `MLP` sınıfları |
 | `train.py` | Görev 5 | Veri kümesi, loss ve eğitim döngüsü |
 | `test_week2.py` | Bütün görevler | Analitik, sayısal ve davranışsal doğrulamalar |
 | `build_notebook.py` | Gerektiğinde | Notebook'u temiz UTF-8 içerikle yeniden üretir |
+| `build_video_notebook.py` | Gerektiğinde | Video anlatım notebook'unu yeniden üretir |
 | `requirements.txt` | Kurulum | Notebook, grafik ve PyTorch bağımlılıkları |
 
 Notebook içinde bir kavramı deneyip doğruladıktan sonra kalıcı uygulamasını
