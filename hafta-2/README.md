@@ -31,13 +31,11 @@ Bütün parametrelerin gradient'leri
 | Dosya | Ne zaman doldurulacak? | Görevi |
 |---|---|---|
 | `backpropagation_calismasi.ipynb` | Bütün görevler | Ana çalışma defteri, deneyler ve görünür çıktılar |
-| `video_anlatimi.ipynb` | Video teslimi | Sade, konuşma dilinde kayıt akışı ve temel çıktılar |
 | `value.py` | Görev 1–4 | `Value`, matematiksel operasyonlar ve `backward()` |
 | `nn.py` | Görev 5 | `Neuron`, `Layer` ve `MLP` sınıfları |
 | `train.py` | Görev 5 | Veri kümesi, loss ve eğitim döngüsü |
 | `test_week2.py` | Bütün görevler | Analitik, sayısal ve davranışsal doğrulamalar |
 | `build_notebook.py` | Gerektiğinde | Notebook'u temiz UTF-8 içerikle yeniden üretir |
-| `build_video_notebook.py` | Gerektiğinde | Video anlatım notebook'unu yeniden üretir |
 | `requirements.txt` | Kurulum | Notebook, grafik ve PyTorch bağımlılıkları |
 
 Notebook içinde bir kavramı deneyip doğruladıktan sonra kalıcı uygulamasını
@@ -123,7 +121,7 @@ Value → Neuron → Layer → MLP → Loss → Backward → Gradient descent
 ```
 
 Modelin bütün weight ve bias değerleri tek parametre listesinde toplanacak.
-Videodaki küçük veri kümesinde eğitim yapılacak ve loss'un adım adım düştüğü
+Örnek küçük veri kümesinde eğitim yapılacak ve loss'un adım adım düştüğü
 gösterilecek.
 
 Her eğitim adımının değişmez sırası:
@@ -201,10 +199,9 @@ Görevler ilerledikçe aşağıdaki tablo güncellenecek:
 - Eğitim loss'u: `5.2305 → 0.0272`
 - Otomatik testler: `7/7 başarılı`
 
-## Video için tutulacak notlar
+## Kavram kontrol listesi
 
-Çalışma sırasında video anlatımında kullanmak üzere şu soruların cevaplarını
-kaydedeceğim:
+Bu çalışmanın sonunda aşağıdaki sorular cevaplanabilir:
 
 - `Value` neden yalnızca sayıyı değil, graph bağlantılarını da saklıyor?
 - Local derivative ile nihai loss gradient'i arasındaki fark ne?

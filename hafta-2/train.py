@@ -1,4 +1,4 @@
-"""Videodaki küçük veri kümesinde MLP eğitimi."""
+"""Küçük bir veri kümesi üzerinde MLP eğitimi."""
 
 import random
 
