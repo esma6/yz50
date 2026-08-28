@@ -20,16 +20,16 @@ cells = [
     markdown(r"""
 # YZ50 — Hafta 2: Backpropagation Çalışma Defteri
 
-Bu notebook, Karpathy'nin micrograd yaklaşımını izleyerek automatic
-differentiation ve backpropagation mekanizmasını scalar seviyesinde kurar.
-Her görevde aynı düzen kullanılır:
+Bir sinir ağı bir tahmin ürettiğinde yalnızca ne kadar hata yaptığını bilmek
+yeterli değildir. Asıl ihtiyaç, bu hatada her ağırlığın ne kadar payı olduğunu
+bulmaktır. Backpropagation bu soruyu, sonucu oluşturan işlemleri geriye doğru
+izleyerek cevaplar.
 
-```text
-Kavram → Elle hesap → Kod → Çıktı → Yorum → Doğrulama
-```
-
-Notebook hücrelerinin çıktıları kaydedilir. Böylece GitHub üzerinde kodu
-çalıştırmadan deney sonuçları, gradient tabloları ve loss eğrisi görülebilir.
+Bu defter Karpathy'nin micrograd yaklaşımını scalar seviyede yeniden kuruyor.
+Amaç yalnızca çalışan bir `backward()` metodu elde etmek değil; computation
+graph, local derivative, chain rule ve gradient descent arasındaki bağlantıyı
+adım adım görünür hale getirmek. Kod hücrelerinin çıktıları kaydedildiği için
+hesapları yeniden çalıştırmadan da düşünce akışı takip edilebilir.
 """),
     markdown(r"""
 ## Büyük resim
@@ -74,7 +74,7 @@ from train import TRAINING_INPUTS, TARGETS, train_model
 print("Python:", sys.version.split()[0])
 """),
     markdown(r"""
-# Görev 1 — `Value` ve computation graph
+# 1 — Bir sayı geçmişini hatırlarsa: `Value` ve computation graph
 
 ## 1.1 Neden normal sayı yerine `Value`?
 
@@ -100,11 +100,16 @@ print("b:", b)
 print("a leaf mi?:", len(a._prev) == 0 and a._op == "")
 """),
     markdown(r"""
-### Çıktıyı nasıl yorumlamalıyım?
+### Henüz yalnızca bir sayı var
 
-`data`, node'un forward pass değeridir. `grad` başlangıçta sıfırdır çünkü henüz
-herhangi bir final output seçip backward pass çalıştırmadık. `a` ve `b` başka
-işlemlerden oluşmadığı için computation graph'ın leaf node'larıdır.
+Ekrandaki `data` alanı forward pass sırasında kullanılan sayıdır. `grad` ise
+henüz sıfırdır; çünkü hangi sonucu inceleyeceğimize karar vermedik ve geriye
+doğru bir hesap başlatmadık. `a` ile `b` başka işlemlerden doğmadığı için
+graph'ın başlangıç noktaları, yani leaf node'larıdır.
+
+Tek başına bu yapı normal bir sayıdan çok farklı görünmüyor. Fark, iki `Value`
+arasında işlem yaptığımız anda ortaya çıkacak: yeni sonuç, nereden geldiğini de
+hatırlayacak.
 """),
     markdown(r"""
 ## 1.2 Toplama ile ilk graph bağlantısı
@@ -136,11 +141,12 @@ print("a önceki node mu?:", a in c._prev)
 print("b önceki node mu?:", b in c._prev)
 """),
     markdown(r"""
-### Çıktıyı nasıl yorumlamalıyım?
+### Sonuç artık nereden geldiğini biliyor
 
-`c.data=-1`, forward hesabın doğru olduğunu gösterir. `_op='+'` ve iki `_prev`
-bağlantısı ise graph'ın forward pass sırasında kurulduğunu kanıtlar. Artık
-`c`den başlayıp kendisini meydana getiren `a` ve `b` node'larına dönebiliriz.
+`c.data=-1` bildiğimiz toplama sonucudur. Yeni olan, `_op='+'` bilgisi ve
+`_prev` içinde duran iki bağlantıdır. Böylece `c` yalnızca `-1` sayısı değildir;
+“`a` ile `b` toplandığında oluşan `-1`”dir. Backward pass daha sonra tam olarak
+bu bağlantıları ters yönde izleyecek.
 """),
     markdown(r"""
 ## 1.3 Çarpma ve birleşik ifade
@@ -174,7 +180,7 @@ for node in [a, b, e, ten, d]:
     )
 """),
     markdown(r"""
-### Görev 1 sonucu
+### Forward pass aslında iki şey üretir
 
 Toplama ve çarpma yeni bir `Value` oluştururken ara sonuçları kaybetmez.
 Final `d` node'undan `e` ve `ten`e, `e` üzerinden de `a` ve `b`ye geri
@@ -185,9 +191,13 @@ Forward pass'in iki çıktısı vardır:
 
 1. Hesabın sayısal sonucu
 2. Bu hesabın computation graph'ı
+
+Graph'ı kurmak tek başına öğrenme sağlamaz. Şimdi bu bağlantılara ikinci bir
+anlam yüklememiz gerekiyor: final sonuçtaki küçük bir değişimin her ara değerle
+nasıl ilişkili olduğunu, yani gradient'leri bulacağız.
 """),
     markdown(r"""
-# Görev 2 — Gradient'leri otomatikleştirmeden önce elle doldurmak
+# 2 — Graph üzerinde geriye yürümek: gradient ve chain rule
 
 ## 2A — Basit ifade
 
@@ -224,7 +234,7 @@ L = d * f; L.label = "L"
 print(f"e={e.data}, d={d.data}, L={L.data}")
 """),
     markdown(r"""
-### Adım 1 — Backward başlangıcı
+### Geriye doğru hesabın başlangıç noktası
 
 Her zaman final output'tan başlarız:
 
@@ -238,7 +248,7 @@ Bu, “L'yi çok küçük miktarda değiştirirsem L aynı miktarda değişir”
 L.grad = 1.0
 """),
     markdown(r"""
-### Adım 2 — `L = d × f`
+### İlk kapı: `L = d × f`
 
 Çarpmanın local derivative'leri:
 
@@ -255,7 +265,7 @@ d.grad = f.data * L.grad
 f.grad = d.data * L.grad
 """),
     markdown(r"""
-### Adım 3 — `d = e + c`
+### Gradient'in iki kola ayrılması: `d = e + c`
 
 Toplamanın iki local derivative'i de `1`dir. Chain rule:
 
@@ -271,7 +281,7 @@ e.grad = 1.0 * d.grad
 c.grad = 1.0 * d.grad
 """),
     markdown(r"""
-### Adım 4 — `e = a × b`
+### Leaf node'lara ulaşmak: `e = a × b`
 
 ```text
 ∂e/∂a = b = -3
@@ -293,7 +303,7 @@ for node in [a, b, c, e, d, f, L]:
     print(f"{node.label:>2} | data={node.data:>5.1f} | grad={node.grad:>5.1f}")
 """),
     markdown(r"""
-## Gradient'leri nasıl yorumlamalıyım?
+## Gradient sayı olmaktan çıkarılıp anlamlandırıldığında
 
 - `a.grad=6`: `a`yı küçük bir `h` kadar artırırsak `L` yaklaşık `6h` artar.
 - `b.grad=-4`: `b`yi artırırsak `L` yaklaşık dört kat hızlı azalır.
@@ -383,15 +393,19 @@ for node in [x1, w1, x2, w2, bias, n, o]:
     print(f"{node.label:>2} | data={node.data:>9.6f} | grad={node.grad:>9.6f}")
 """),
     markdown(r"""
-### Görev 2 sonucu
+### Bir nöron da aynı graph fikrinden oluşur
 
-Bir nöron da yalnızca toplama, çarpma ve `tanh` node'larından oluşan bir
-matematiksel ifadedir. Elle backward yaparken her node'un yalnızca kendi local
-derivative'ini bilmesi yeterlidir; chain rule bu küçük türevleri final output'a
-kadar bağlar.
+Nöron ilk bakışta yeni ve daha karmaşık bir yapı gibi görünse de aslında
+toplama, çarpma ve `tanh` node'larından oluşan başka bir matematiksel ifadedir.
+Her node yalnızca kendi local derivative'ini bilir; chain rule bu küçük yerel
+bilgileri final output'a kadar bağlar.
+
+Gradient'leri elle doldurmak mekanizmayı görünür yaptı, fakat büyük bir graph'ta
+her node'u elle gezmek mümkün değildir. Bir sonraki bölümde aynı hesabın sırasını
+bozmadan otomatikleştireceğiz.
 """),
     markdown(r"""
-# Görev 3 — Otomatik `backward()`
+# 3 — Elle yaptığımız yürüyüşü otomatikleştirmek: `backward()`
 
 Elle yaptığımız işlemi otomatikleştirmek için:
 
@@ -419,7 +433,7 @@ for node in [a2, b2, c2, f2, L2]:
     print(f"{node.label:>2} | data={node.data:>5.1f} | grad={node.grad:>5.1f}")
 """),
     markdown(r"""
-### Manuel ve otomatik sonuç karşılaştırması
+### Otomasyonun doğru olduğuna dair ilk kanıt
 
 | Node | Manuel gradient | Otomatik gradient |
 |---|---:|---:|
@@ -458,14 +472,18 @@ print("x=3 için x*x gradient'i:", reused.grad)
 print("Beklenen analitik değer 2*x:", 2 * reused.data)
 """),
     markdown(r"""
-### Görev 3 sonucu
+### `backward()` yalnızca sinir ağlarına ait değildir
 
 `backward()` özel bir neural-network işlemi değildir. Herhangi bir scalar
 computation graph üzerinde chain rule'u ters sırada uygular. Neural network'ler
 bu genel matematiksel ifadelerin özel ve büyük bir sınıfıdır.
+
+Elle bulunan değerlerle eşleşmek iyi bir başlangıçtır; yine de uygulamanın
+kendi varsayımlarını kullanarak kendisini doğrulaması yeterli değildir. Şimdi
+aynı türevi farklı graph yapıları ve bağımsız yöntemlerle karşılaştıracağız.
 """),
     markdown(r"""
-# Görev 4 — `tanh`ı parçalamak ve üç yöntemle doğrulamak
+# 4 — Aynı matematiğe farklı yollardan ulaşmak: `tanh` ve gradient kontrolü
 
 Hyperbolic tangent daha küçük operasyonlarla yazılabilir:
 
@@ -495,7 +513,7 @@ print(f"Atomic input gradient:   {atomic_x.grad:.12f}")
 print(f"Parçalanmış gradient:    {decomposed_x.grad:.12f}")
 """),
     markdown(r"""
-### Neden sonuçlar aynı?
+### Graph değişse de temsil edilen fonksiyon değişmedi
 
 İki graph'ın iç node'ları farklıdır fakat temsil ettikleri matematiksel
 fonksiyon aynıdır. Autograd açısından bir operasyonun ne kadar “atomik” olduğu
@@ -547,7 +565,7 @@ print(f"Micro-numeric fark: {abs(micro_x.grad-numeric_gradient):.3e}")
 print(f"Micro-torch fark:   {abs(micro_x.grad-torch_gradient):.3e}")
 """),
     markdown(r"""
-### Gradient kontrolünü nasıl yorumlamalıyım?
+### Üç yöntemin aynı sayıda buluşması neyi gösteriyor?
 
 Üç sonucun floating-point toleransı içinde eşleşmesi şunları doğrular:
 
@@ -557,9 +575,13 @@ print(f"Micro-torch fark:   {abs(micro_x.grad-torch_gradient):.3e}")
 - Birden fazla gradient yolu doğru toplanıyor.
 
 Küçük son basamak farkları hata değil, floating-point temsilinin sonucudur.
+Bu karşılaştırmadan sonra `Value` motorunun yalnızca birkaç seçilmiş örnekte
+çalıştığını değil, türev kurallarını tutarlı biçimde uyguladığını söyleyebiliriz.
+Artık bu motoru tek tek ifadeler yerine katmanlı bir modelin altında kullanmaya
+hazırız.
 """),
     markdown(r"""
-# Görev 5 — `Neuron`, `Layer`, `MLP` ve eğitim
+# 5 — Küçük işlemlerden öğrenen bir modele: `Neuron`, `Layer` ve `MLP`
 
 Yapı:
 
@@ -685,7 +707,7 @@ plt.grid(alpha=0.25)
 plt.show()
 """),
     markdown(r"""
-### Eğitim çıktısını nasıl yorumlamalıyım?
+### Loss eğrisi modelin öğrendiğini nasıl gösteriyor?
 
 - İlk loss, rastgele parametrelerin tahmin hatasıdır.
 - Her backward pass 41 parametrenin gradient'ini hesaplar.
@@ -699,7 +721,7 @@ atılacağını belirler. Çok küçük değer yavaş, çok büyük değer karar
 oluşturabilir.
 """),
     markdown(r"""
-# Hafta 2 — Genel sonuç
+# Parçaları yeniden birleştirmek
 
 Bu çalışmada:
 
