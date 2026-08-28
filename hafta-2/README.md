@@ -34,7 +34,9 @@ Bütün parametrelerin gradient'leri
 | `value.py` | Görev 1–4 | `Value`, matematiksel operasyonlar ve `backward()` |
 | `nn.py` | Görev 5 | `Neuron`, `Layer` ve `MLP` sınıfları |
 | `train.py` | Görev 5 | Veri kümesi, loss ve eğitim döngüsü |
-| `test_week2.py` | Her görevden sonra | Analitik, sayısal ve davranışsal doğrulamalar |
+| `test_week2.py` | Bütün görevler | Analitik, sayısal ve davranışsal doğrulamalar |
+| `build_notebook.py` | Gerektiğinde | Notebook'u temiz UTF-8 içerikle yeniden üretir |
+| `requirements.txt` | Kurulum | Notebook, grafik ve PyTorch bağımlılıkları |
 
 Notebook içinde bir kavramı deneyip doğruladıktan sonra kalıcı uygulamasını
 ilgili `.py` dosyasına aktaracağım. Böylece notebook öğrenme sürecini, Python
@@ -168,6 +170,7 @@ Dosyalar tamamlandıkça bu klasör içinde çalıştırılacak:
 
 ```bash
 cd hafta-2
+python -m pip install -r requirements.txt
 python -m notebook backpropagation_calismasi.ipynb
 python -m unittest -v
 python train.py
@@ -179,11 +182,22 @@ Görevler ilerledikçe aşağıdaki tablo güncellenecek:
 
 | Görev | Durum | Doğrulama | Not |
 |---|---|---|---|
-| 1. Value ve graph | Devam ediyor | `Value.data` ve toplama elle kontrol edildi | İlk graph bağlantısı kuruldu |
-| 2. Elle backpropagation | Başlanmadı | — | — |
-| 3. Otomatik backward | Başlanmadı | — | — |
-| 4. Üçlü gradient kontrolü | Başlanmadı | — | — |
-| 5. MLP eğitimi | Başlanmadı | — | — |
+| 1. Value ve graph | Tamamlandı | Toplama, çarpma ve graph metadata test edildi | Ara node'lar korunuyor |
+| 2. Elle backpropagation | Tamamlandı | Basit ifade ve tek nöron tabloları | Chain rule elle uygulandı |
+| 3. Otomatik backward | Tamamlandı | Manuel değerlerle ve tekrar kullanılan node ile test | Gradient'ler `+=` ile birikiyor |
+| 4. Üçlü gradient kontrolü | Tamamlandı | Micrograd, numerical ve PyTorch eşleşti | En büyük fark yaklaşık `4e-12` |
+| 5. MLP eğitimi | Tamamlandı | 7 test ve loss eğrisi | Loss `5.23`ten `0.027`ye düştü |
+
+## Doğrulanan sonuçlar
+
+- Basit ifade gradient'leri: `a=6`, `b=-4`, `c=-2`, `f=4`
+- Tek nöron output'u: `0.70710678`
+- Atomic ve parçalanmış `tanh` input gradient'i: `0.5`
+- Micrograd ve PyTorch gradient farkı: `0.0`
+- Micrograd ve numerical derivative farkı: yaklaşık `4e-12`
+- `3→4→4→1` MLP parametre sayısı: `41`
+- Eğitim loss'u: `5.2305 → 0.0272`
+- Otomatik testler: `7/7 başarılı`
 
 ## Video için tutulacak notlar
 

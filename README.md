@@ -26,7 +26,7 @@ böylece yeni haftalar eklendikçe önceki çalışmalar karmaşıklaşmaz.
 - Ters topological sırada `backward()`
 - Numerical derivative ve PyTorch ile doğrulama
 - `Neuron`, `Layer` ve `MLP` eğitimi
-- Durum: **Çalışılıyor**
+- Durum: **Tamamlandı — notebook çıktıları ve 7 doğrulama testi mevcut**
 - [Çalışma planı ve başlangıç dosyaları](hafta-2/README.md)
 
 </details>
